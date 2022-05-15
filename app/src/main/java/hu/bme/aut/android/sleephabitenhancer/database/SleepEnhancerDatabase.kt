@@ -11,14 +11,4 @@ import androidx.room.RoomDatabase
 )
 abstract class SleepEnhancerDatabase : RoomDatabase() {
     abstract fun alarmDao(): AlarmDao
-
-    companion object {
-        fun getDatabase(applicationContext: Context): SleepEnhancerDatabase {
-            return Room.databaseBuilder(
-                applicationContext,
-                SleepEnhancerDatabase::class.java,
-                "sleepenhancer"
-            ).build()
-        }
-    }
 }
