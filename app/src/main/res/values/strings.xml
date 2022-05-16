@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">SleepHabitEnhancer</string>
+    <string name="add_alarm">Add an alarm</string>
+    <string name="sleep_duration">%1$d hours of sleep</string>
 </resources>

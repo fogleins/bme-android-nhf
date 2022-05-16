@@ -21,4 +21,12 @@ class SleepEnhancerViewModel : ViewModel() {
     fun insert(alarm: Alarm) = viewModelScope.launch {
         repository.insert(alarm)
     }
+
+    fun delete(alarm: Alarm) = viewModelScope.launch {
+        repository.delete(alarm)
+    }
+
+    fun update(alarm: Alarm) = viewModelScope.launch {
+        repository.update(alarm)
+    }
 }

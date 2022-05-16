@@ -21,6 +21,14 @@ class Repository(private val alarmDao: AlarmDao) {
         alarmDao.insertAlarm(alarm.toRoomModel())
     }
 
+    suspend fun delete(alarm: Alarm) = withContext(Dispatchers.IO) {
+        alarmDao.deleteAlarm(alarm.toRoomModel())
+    }
+
+    suspend fun update(alarm: Alarm) = withContext(Dispatchers.IO) {
+        alarmDao.updateAlarm(alarm.toRoomModel())
+    }
+
     private fun RoomAlarm.toDomainModel(): Alarm {
         return Alarm(
             id = id!!,
