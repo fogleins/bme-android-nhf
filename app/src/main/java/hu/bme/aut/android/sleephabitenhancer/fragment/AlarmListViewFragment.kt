@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.*
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import com.google.android.material.snackbar.Snackbar
 import hu.bme.aut.android.sleephabitenhancer.adapter.AlarmRecyclerViewAdapter
 import hu.bme.aut.android.sleephabitenhancer.databinding.FragmentAlarmListViewBinding
 import hu.bme.aut.android.sleephabitenhancer.model.Alarm
@@ -58,14 +59,13 @@ class AlarmListViewFragment : Fragment(), AlarmRecyclerViewAdapter.AlarmItemClic
     }
 
     private fun setupRecyclerView() {
-//        val alarms = alarmRecyclerViewAdapter.currentList
         alarmRecyclerViewAdapter.itemClickListener = this
-//        alarmRecyclerViewAdapter.setAlarmsList(alarms)
         binding.rvAlarms.adapter = alarmRecyclerViewAdapter
     }
 
     override fun onItemClick(alarm: Alarm) {
-        // TODO: Edit alarm dialog
+        // TODO
+        Snackbar.make(binding.rvAlarms, alarm.name + " clicked", Snackbar.LENGTH_LONG).show()
     }
 
     override fun onAlarmActiveStateChange(alarm: Alarm) {
