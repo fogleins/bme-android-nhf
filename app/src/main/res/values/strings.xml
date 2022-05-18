@@ -1,5 +1,16 @@
 <resources>
     <string name="app_name">SleepHabitEnhancer</string>
     <string name="add_alarm">Add an alarm</string>
-    <string name="sleep_duration">%1$d hours of sleep</string>
+    <string name="sleep_duration">%1$s hours of sleep</string>
+    <string name="create_alarm">Create new alarm</string>
+    <string name="edit_alarm">Edit alarm</string>
+    <string name="button_ok">OK</string>
+    <string name="hint_set_alarm_time">Set the time of the alarm</string>
+    <string name="time_of_the_alarm">Time of the alarm:</string>
+    <string name="time_of_the_notification">Time of the notification:</string>
+    <string name="hint_time_of_the_notification">Set the time of the notification</string>
+    <string name="button_cancel">Cancel</string>
+    <string name="alarm_name">Alarm name:</string>
+    <string name="name_your_alarm">Name your alarm</string>
+    <string name="message_invalid_value_on_save">Invalid name, time or reminder time given. The alarm was not set.</string>
 </resources>

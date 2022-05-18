@@ -5,12 +5,14 @@ import android.view.*
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.snackbar.Snackbar
+import hu.bme.aut.android.sleephabitenhancer.R
 import hu.bme.aut.android.sleephabitenhancer.adapter.AlarmRecyclerViewAdapter
 import hu.bme.aut.android.sleephabitenhancer.databinding.FragmentAlarmListViewBinding
 import hu.bme.aut.android.sleephabitenhancer.model.Alarm
 import hu.bme.aut.android.sleephabitenhancer.viewmodel.SleepEnhancerViewModel
 
-class AlarmListViewFragment : Fragment(), AlarmRecyclerViewAdapter.AlarmItemClickListener {
+class AlarmListViewFragment : Fragment(), AlarmRecyclerViewAdapter.AlarmItemClickListener,
+    AlarmSetterDialogFragment.TimeChooserDialogListener {
 
 
     private var _binding: FragmentAlarmListViewBinding? = null
@@ -45,15 +47,9 @@ class AlarmListViewFragment : Fragment(), AlarmRecyclerViewAdapter.AlarmItemClic
 
         setupRecyclerView()
         binding.btnAddAlarm.setOnClickListener {
-            // TODO: Add alarm dialog
-            sleepEnhancerViewModel.insert(
-                Alarm(
-                    name = "my first alarm",
-                    reminderDue = "23:15",
-                    alarmDue = "8:30",
-                    active = true,
-                    id = 0
-                )
+            AlarmSetterDialogFragment(this).show(
+                parentFragmentManager,
+                AlarmSetterDialogFragment.TAG
             )
         }
     }
@@ -64,13 +60,30 @@ class AlarmListViewFragment : Fragment(), AlarmRecyclerViewAdapter.AlarmItemClic
     }
 
     override fun onItemClick(alarm: Alarm) {
-        // TODO
-        Snackbar.make(binding.rvAlarms, alarm.name + " clicked", Snackbar.LENGTH_LONG).show()
+        AlarmSetterDialogFragment(this, alarm).show(
+            parentFragmentManager,
+            AlarmSetterDialogFragment.TAG
+        )
     }
 
     override fun onAlarmActiveStateChange(alarm: Alarm) {
-        // TODO: gomb állapota változzon meg
         alarm.active = !alarm.active
         sleepEnhancerViewModel.update(alarm)
+    }
+
+    override fun onAlarmCreated(newItem: Alarm) {
+        sleepEnhancerViewModel.insert(newItem)
+    }
+
+    override fun onAlarmEdited(editedItem: Alarm) {
+        sleepEnhancerViewModel.update(editedItem)
+    }
+
+    override fun onInvalidValueOnSave() {
+        Snackbar.make(
+            binding.rvAlarms,
+            getString(R.string.message_invalid_value_on_save),
+            Snackbar.LENGTH_LONG
+        ).show()
     }
 }
