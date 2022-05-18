@@ -2,6 +2,7 @@ package hu.bme.aut.android.sleephabitenhancer.adapter
 
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.DiffUtil
@@ -67,6 +68,11 @@ class AlarmRecyclerViewAdapter :
                 }
             }
 
+            itemView.setOnLongClickListener { view ->
+                alarm?.let { itemClickListener?.onItemLongClick(adapterPosition, view, it) }
+                true
+            }
+
             binding.swAlarmEnabled.setOnClickListener {
                 alarm?.let { alarm ->
                     itemClickListener?.onAlarmActiveStateChange(alarm)
@@ -77,6 +83,7 @@ class AlarmRecyclerViewAdapter :
 
     interface AlarmItemClickListener {
         fun onItemClick(alarm: Alarm)
+        fun onItemLongClick(position: Int, view: View, alarm: Alarm): Boolean
         fun onAlarmActiveStateChange(alarm: Alarm)
     }
 }

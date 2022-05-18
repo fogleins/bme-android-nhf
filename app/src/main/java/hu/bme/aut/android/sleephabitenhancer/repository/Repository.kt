@@ -23,7 +23,8 @@ class Repository(private val alarmDao: AlarmDao) {
     }
 
     suspend fun delete(alarm: Alarm) = withContext(Dispatchers.IO) {
-        alarmDao.deleteAlarm(alarm.toRoomModel())
+        val alarmToDelete = alarmDao.getAlarmById(alarm.id) ?: return@withContext
+        alarmDao.deleteAlarm(alarmToDelete)
     }
 
     suspend fun update(alarm: Alarm) = withContext(Dispatchers.IO) {

@@ -12,6 +12,7 @@
         <entry key="app/src/main/res/layout/bedtime_wakeup_time_layout.xml" value="0.33" />
         <entry key="app/src/main/res/layout/fragment_alarm_list_view.xml" value="0.16" />
         <entry key="app/src/main/res/layout/fragment_alarm_setter_dialog.xml" value="0.25" />
+        <entry key="app/src/main/res/menu/longclick_menu.xml" value="0.19322916666666667" />
       </map>
     </option>
   </component>

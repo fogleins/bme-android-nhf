@@ -2,6 +2,7 @@ package hu.bme.aut.android.sleephabitenhancer.fragment
 
 import android.os.Bundle
 import android.view.*
+import androidx.appcompat.widget.PopupMenu
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -71,6 +72,23 @@ class AlarmListViewFragment : Fragment(), AlarmRecyclerViewAdapter.AlarmItemClic
             parentFragmentManager,
             AlarmSetterDialogFragment.TAG
         )
+    }
+
+    override fun onItemLongClick(position: Int, view: View, alarm: Alarm): Boolean {
+        val ctx = context ?: return false
+        val popup = PopupMenu(ctx, view)
+        popup.inflate(R.menu.longclick_menu)
+        popup.setOnMenuItemClickListener { item ->
+            when (item.itemId) {
+                R.id.delete -> {
+                    sleepEnhancerViewModel.delete(alarm)
+                    return@setOnMenuItemClickListener true
+                }
+            }
+            false
+        }
+        popup.show()
+        return false
     }
 
     override fun onAlarmActiveStateChange(alarm: Alarm) {
