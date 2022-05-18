@@ -50,6 +50,8 @@ class AlarmRecyclerViewAdapter :
                 alarmItem.alarmDue - alarmItem.reminderDue
             )
         holder.binding.swAlarmEnabled.isChecked = alarmItem.active
+        holder.binding.bedtimeWakeupTimes.tvBedtime.text = alarmItem.reminderDue.toString()
+        holder.binding.bedtimeWakeupTimes.tvWakeupTime.text = alarmItem.alarmDue.toString()
     }
 
 

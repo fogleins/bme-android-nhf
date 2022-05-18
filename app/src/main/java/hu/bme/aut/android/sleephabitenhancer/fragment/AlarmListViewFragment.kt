@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.*
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.DividerItemDecoration
 import com.google.android.material.snackbar.Snackbar
 import hu.bme.aut.android.sleephabitenhancer.R
 import hu.bme.aut.android.sleephabitenhancer.adapter.AlarmRecyclerViewAdapter
@@ -55,6 +56,12 @@ class AlarmListViewFragment : Fragment(), AlarmRecyclerViewAdapter.AlarmItemClic
     }
 
     private fun setupRecyclerView() {
+        binding.rvAlarms.addItemDecoration(
+            DividerItemDecoration(
+                binding.rvAlarms.context,
+                DividerItemDecoration.VERTICAL
+            )
+        )
         alarmRecyclerViewAdapter.itemClickListener = this
         binding.rvAlarms.adapter = alarmRecyclerViewAdapter
     }
