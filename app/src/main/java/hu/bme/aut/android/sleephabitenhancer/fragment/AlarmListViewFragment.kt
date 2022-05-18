@@ -69,6 +69,17 @@ class AlarmListViewFragment : Fragment(), AlarmRecyclerViewAdapter.AlarmItemClic
     override fun onAlarmActiveStateChange(alarm: Alarm) {
         alarm.active = !alarm.active
         sleepEnhancerViewModel.update(alarm)
+        Snackbar.make(
+            binding.rvAlarms,
+            if (alarm.active) getString(
+                R.string.message_alarm_on,
+                alarm.alarmDue,
+                alarm.reminderDue
+            ) else getString(
+                R.string.message_alarm_off
+            ),
+            Snackbar.LENGTH_LONG
+        ).show()
     }
 
     override fun onAlarmCreated(newItem: Alarm) {

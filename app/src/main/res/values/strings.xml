@@ -13,4 +13,6 @@
     <string name="alarm_name">Alarm name:</string>
     <string name="name_your_alarm">Name your alarm</string>
     <string name="message_invalid_value_on_save">Invalid name, time or reminder time given. The alarm was not set.</string>
+    <string name="message_alarm_off">Alarm has been turned off.</string>
+    <string name="message_alarm_on">Alarm set for %1$s, notification is scheduled for %2$s</string>
 </resources>
