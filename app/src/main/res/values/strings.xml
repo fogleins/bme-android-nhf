@@ -19,4 +19,8 @@
     <string name="back">BACK</string>
     <string name="notification_title_time_to_sleep">Time to sleep!</string>
     <string name="notification_content_good_night">You should go to bed in order to get enough sleep. Good night!</string>
+    <string name="title_activity_alarm_triggered">AlarmTriggeredActivity</string>
+    <string name="button_dismiss_alarm">Dismiss</string>
+    <string name="alarm">ALARM</string>
+    <string name="alarm_clock">Alarm clock</string>
 </resources>
