@@ -11,6 +11,10 @@ import hu.bme.aut.android.sleephabitenhancer.R
 import hu.bme.aut.android.sleephabitenhancer.adapter.AlarmRecyclerViewAdapter
 import hu.bme.aut.android.sleephabitenhancer.databinding.FragmentAlarmListViewBinding
 import hu.bme.aut.android.sleephabitenhancer.model.Alarm
+import hu.bme.aut.android.sleephabitenhancer.util.AlarmHelper
+import hu.bme.aut.android.sleephabitenhancer.util.notification.NotificationHelper
+import hu.bme.aut.android.sleephabitenhancer.util.timeDeltaFromNow
+import hu.bme.aut.android.sleephabitenhancer.util.timeDeltaMinutesFromNow
 import hu.bme.aut.android.sleephabitenhancer.viewmodel.SleepEnhancerViewModel
 
 class AlarmListViewFragment : Fragment(), AlarmRecyclerViewAdapter.AlarmItemClickListener,
@@ -109,16 +113,39 @@ class AlarmListViewFragment : Fragment(), AlarmRecyclerViewAdapter.AlarmItemClic
 
     override fun onAlarmCreated(newItem: Alarm) {
         sleepEnhancerViewModel.insert(newItem)
+        context?.let {
+            val pendingIntent = NotificationHelper.createPendingIntentForBedtimeNotification(
+                it
+            )
+            AlarmHelper.scheduleNotification(
+                requireContext(),
+                newItem.reminderDue.timeDeltaMinutesFromNow(),
+                pendingIntent
+            )
+        }
+        showAlarmSetSnackbar(newItem)
     }
 
     override fun onAlarmEdited(editedItem: Alarm) {
         sleepEnhancerViewModel.update(editedItem)
+        showAlarmSetSnackbar(editedItem)
     }
 
     override fun onInvalidValueOnSave() {
         Snackbar.make(
             binding.rvAlarms,
             getString(R.string.message_invalid_value_on_save),
+            Snackbar.LENGTH_LONG
+        ).show()
+    }
+
+    private fun showAlarmSetSnackbar(alarm: Alarm) {
+        val timeUntilReminder = alarm.reminderDue.timeDeltaFromNow()
+        val timeUntilAlarm = alarm.alarmDue.timeDeltaFromNow()
+
+        Snackbar.make(
+            binding.rvAlarms,
+            "Alarm set. Time until bedtime: $timeUntilReminder, time until alarm: $timeUntilAlarm",
             Snackbar.LENGTH_LONG
         ).show()
     }

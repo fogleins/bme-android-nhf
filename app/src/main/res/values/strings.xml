@@ -17,4 +17,6 @@
     <string name="message_alarm_on">Alarm set for %1$s, notification is scheduled for %2$s</string>
     <string name="delete">DELETE</string>
     <string name="back">BACK</string>
+    <string name="notification_title_time_to_sleep">Time to sleep!</string>
+    <string name="notification_content_good_night">You should go to bed in order to get enough sleep. Good night!</string>
 </resources>
