@@ -20,7 +20,10 @@ class NotificationHelper {
                 SleepEnhancerNotificationChannel.values().forEach {
                     val name = it.channelName
                     val descriptionText = it.channelDescription
-                    val importance = NotificationManager.IMPORTANCE_DEFAULT
+                    val importance =
+                        if (it.id == "hu.bme.aut.android.sleephabitenhancer.bedtimereminder")
+                            NotificationManager.IMPORTANCE_HIGH
+                        else NotificationManager.IMPORTANCE_DEFAULT
                     val channel = NotificationChannel(it.id, name, importance).apply {
                         description = descriptionText
                     }
@@ -32,16 +35,16 @@ class NotificationHelper {
             }
         }
 
-        fun createPendingIntentForBedtimeNotification(ctx: Context): PendingIntent =
+        fun createPendingIntentForBedtimeNotification(ctx: Context, alarmId: Int): PendingIntent =
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 PendingIntent.getBroadcast(
-                    ctx, 0, Intent(ctx, BedtimeBroadcastReceiver::class.java),
+                    ctx, alarmId, Intent(ctx, BedtimeBroadcastReceiver::class.java),
                     PendingIntent.FLAG_IMMUTABLE
                 )
             } else {
                 PendingIntent.getBroadcast(
                     ctx,
-                    0,
+                    alarmId,
                     Intent(ctx, BedtimeBroadcastReceiver::class.java),
                     0
                 )

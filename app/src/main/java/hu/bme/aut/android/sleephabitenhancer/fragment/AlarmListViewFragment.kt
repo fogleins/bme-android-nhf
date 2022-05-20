@@ -1,5 +1,9 @@
 package hu.bme.aut.android.sleephabitenhancer.fragment
 
+import android.app.PendingIntent
+import android.content.Context
+import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.view.*
 import androidx.appcompat.widget.PopupMenu
@@ -9,6 +13,8 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import com.google.android.material.snackbar.Snackbar
 import hu.bme.aut.android.sleephabitenhancer.R
 import hu.bme.aut.android.sleephabitenhancer.adapter.AlarmRecyclerViewAdapter
+import hu.bme.aut.android.sleephabitenhancer.broadcastreceiver.AlarmBroadcastReceiver
+import hu.bme.aut.android.sleephabitenhancer.callback.AlarmManagerStateChangeHandler
 import hu.bme.aut.android.sleephabitenhancer.databinding.FragmentAlarmListViewBinding
 import hu.bme.aut.android.sleephabitenhancer.model.Alarm
 import hu.bme.aut.android.sleephabitenhancer.util.AlarmHelper
@@ -18,7 +24,7 @@ import hu.bme.aut.android.sleephabitenhancer.util.timeDeltaMinutesFromNow
 import hu.bme.aut.android.sleephabitenhancer.viewmodel.SleepEnhancerViewModel
 
 class AlarmListViewFragment : Fragment(), AlarmRecyclerViewAdapter.AlarmItemClickListener,
-    AlarmSetterDialogFragment.TimeChooserDialogListener {
+    AlarmSetterDialogFragment.TimeChooserDialogListener, AlarmManagerStateChangeHandler {
 
 
     private var _binding: FragmentAlarmListViewBinding? = null
@@ -26,10 +32,10 @@ class AlarmListViewFragment : Fragment(), AlarmRecyclerViewAdapter.AlarmItemClic
 
     private lateinit var alarmRecyclerViewAdapter: AlarmRecyclerViewAdapter
     private lateinit var sleepEnhancerViewModel: SleepEnhancerViewModel
+    private val alarmManagerStateChangeHandler: AlarmManagerStateChangeHandler = this
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         sleepEnhancerViewModel = ViewModelProvider(this)[SleepEnhancerViewModel::class.java]
         alarmRecyclerViewAdapter = AlarmRecyclerViewAdapter()
         sleepEnhancerViewModel.alarms.observe(this) { alarmsList ->
@@ -98,6 +104,17 @@ class AlarmListViewFragment : Fragment(), AlarmRecyclerViewAdapter.AlarmItemClic
     override fun onAlarmActiveStateChange(alarm: Alarm) {
         alarm.active = !alarm.active
         sleepEnhancerViewModel.update(alarm)
+        context?.let {
+            if (alarm.active) {
+                // enable
+                alarmManagerStateChangeHandler.setNotification(it, alarm)
+                alarmManagerStateChangeHandler.setAlarm(it, alarm)
+            } else {
+                // disable
+                alarmManagerStateChangeHandler.cancelNotification(it, alarm)
+                alarmManagerStateChangeHandler.cancelAlarm(it, alarm)
+            }
+        }
         Snackbar.make(
             binding.rvAlarms,
             if (alarm.active) getString(
@@ -114,20 +131,20 @@ class AlarmListViewFragment : Fragment(), AlarmRecyclerViewAdapter.AlarmItemClic
     override fun onAlarmCreated(newItem: Alarm) {
         sleepEnhancerViewModel.insert(newItem)
         context?.let {
-            val pendingIntent = NotificationHelper.createPendingIntentForBedtimeNotification(
-                it
-            )
-            AlarmHelper.scheduleNotification(
-                requireContext(),
-                newItem.reminderDue.timeDeltaMinutesFromNow(),
-                pendingIntent
-            )
+            alarmManagerStateChangeHandler.setNotification(it, newItem)
+            alarmManagerStateChangeHandler.setAlarm(it, newItem)
         }
         showAlarmSetSnackbar(newItem)
     }
 
     override fun onAlarmEdited(editedItem: Alarm) {
         sleepEnhancerViewModel.update(editedItem)
+        context?.let {
+            alarmManagerStateChangeHandler.cancelNotification(it, editedItem)
+            alarmManagerStateChangeHandler.cancelAlarm(it, editedItem)
+            alarmManagerStateChangeHandler.setNotification(it, editedItem)
+            alarmManagerStateChangeHandler.setAlarm(it, editedItem)
+        }
         showAlarmSetSnackbar(editedItem)
     }
 
@@ -145,8 +162,55 @@ class AlarmListViewFragment : Fragment(), AlarmRecyclerViewAdapter.AlarmItemClic
 
         Snackbar.make(
             binding.rvAlarms,
+            // TODO: move to strings.xml
             "Alarm set. Time until bedtime: $timeUntilReminder, time until alarm: $timeUntilAlarm",
             Snackbar.LENGTH_LONG
         ).show()
+    }
+
+    override fun setNotification(ctx: Context, alarm: Alarm) {
+        val pendingIntent =
+            NotificationHelper.createPendingIntentForBedtimeNotification(ctx, alarm.id.toInt())
+        AlarmHelper.scheduleNotification(
+            ctx,
+            alarm.reminderDue.timeDeltaMinutesFromNow(),
+            pendingIntent
+        )
+    }
+
+    override fun setAlarm(ctx: Context, alarm: Alarm) {
+        val intent = Intent(context, AlarmBroadcastReceiver::class.java)
+        val alarmIntent =
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) PendingIntent.getBroadcast(
+                context,
+                1,
+                intent,
+                PendingIntent.FLAG_IMMUTABLE
+            ) else
+                PendingIntent.getBroadcast(context, 1, intent, 0)
+        AlarmHelper.scheduleAlarm(
+            ctx,
+            alarm.alarmDue.timeDeltaMinutesFromNow().toLong() * 60,
+            alarmIntent
+        )
+    }
+
+    override fun cancelNotification(ctx: Context, alarm: Alarm) {
+        val pendingIntent =
+            NotificationHelper.createPendingIntentForBedtimeNotification(ctx, alarm.id.toInt())
+        AlarmHelper.cancelNotification(ctx, pendingIntent)
+    }
+
+    override fun cancelAlarm(ctx: Context, alarm: Alarm) {
+        val intent = Intent(context, AlarmBroadcastReceiver::class.java)
+        val alarmIntent =
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) PendingIntent.getBroadcast(
+                context,
+                1,
+                intent,
+                PendingIntent.FLAG_IMMUTABLE
+            ) else
+                PendingIntent.getBroadcast(context, 1, intent, 0)
+        AlarmHelper.cancelNotification(ctx, alarmIntent)
     }
 }

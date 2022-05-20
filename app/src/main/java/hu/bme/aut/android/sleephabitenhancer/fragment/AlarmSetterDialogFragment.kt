@@ -105,7 +105,6 @@ class AlarmSetterDialogFragment(
         const val TAG = "AlarmSetterDialogFragment"
     }
 
-    // TODO: validate the chosen times
     private fun inputIsValid() =
         binding.etAlarmTime.text.isNotBlank() && binding.etNotificationTime.text.isNotBlank() && binding.etAlarmName.text.isNotBlank()
 

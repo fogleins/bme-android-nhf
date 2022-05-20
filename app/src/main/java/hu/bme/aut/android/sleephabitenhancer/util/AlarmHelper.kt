@@ -12,17 +12,25 @@ class AlarmHelper {
         fun scheduleNotification(ctx: Context, delayMinutes: Int, pendingIntent: PendingIntent) {
             val triggerDateTime = System.currentTimeMillis() + delayMinutes * 60 * 1000
             val alarmManager = ctx.getSystemService(Context.ALARM_SERVICE) as? AlarmManager
-            alarmManager?.setRepeating(AlarmManager.RTC_WAKEUP, triggerDateTime, DAY_IN_MILLISECONDS, pendingIntent)
+            alarmManager?.setRepeating(
+                AlarmManager.RTC_WAKEUP,
+                triggerDateTime,
+                DAY_IN_MILLISECONDS,
+                pendingIntent
+            )
         }
 
-        // TODO: enable all active alarms
-        // TODO: testing
         fun scheduleAlarm(ctx: Context, delaySeconds: Long, pendingIntent: PendingIntent) {
             val alarmManager = ctx.getSystemService(Context.ALARM_SERVICE) as? AlarmManager
             val triggerTime = System.currentTimeMillis() + delaySeconds * 1000
             Log.d("scheduleAlarm", "called; t: $triggerTime")
             val alarmInfo = AlarmManager.AlarmClockInfo(triggerTime, pendingIntent)
             alarmManager?.setAlarmClock(alarmInfo, pendingIntent)
+        }
+
+        fun cancelNotification(ctx: Context, pendingIntent: PendingIntent) {
+            val alarmManager = ctx.getSystemService(Context.ALARM_SERVICE) as? AlarmManager
+            alarmManager?.cancel(pendingIntent)
         }
     }
 }
