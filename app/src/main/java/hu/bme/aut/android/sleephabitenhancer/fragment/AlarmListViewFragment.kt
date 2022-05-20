@@ -140,10 +140,12 @@ class AlarmListViewFragment : Fragment(), AlarmRecyclerViewAdapter.AlarmItemClic
     override fun onAlarmEdited(editedItem: Alarm) {
         sleepEnhancerViewModel.update(editedItem)
         context?.let {
-            alarmManagerStateChangeHandler.cancelNotification(it, editedItem)
-            alarmManagerStateChangeHandler.cancelAlarm(it, editedItem)
-            alarmManagerStateChangeHandler.setNotification(it, editedItem)
-            alarmManagerStateChangeHandler.setAlarm(it, editedItem)
+            if (editedItem.active) {
+                alarmManagerStateChangeHandler.cancelNotification(it, editedItem)
+                alarmManagerStateChangeHandler.cancelAlarm(it, editedItem)
+                alarmManagerStateChangeHandler.setNotification(it, editedItem)
+                alarmManagerStateChangeHandler.setAlarm(it, editedItem)
+            }
         }
         showAlarmSetSnackbar(editedItem)
     }
@@ -183,11 +185,11 @@ class AlarmListViewFragment : Fragment(), AlarmRecyclerViewAdapter.AlarmItemClic
         val alarmIntent =
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) PendingIntent.getBroadcast(
                 context,
-                1,
+                alarm.id.toInt(),
                 intent,
                 PendingIntent.FLAG_IMMUTABLE
             ) else
-                PendingIntent.getBroadcast(context, 1, intent, 0)
+                PendingIntent.getBroadcast(context, alarm.id.toInt(), intent, 0)
         AlarmHelper.scheduleAlarm(
             ctx,
             alarm.alarmDue.timeDeltaMinutesFromNow().toLong() * 60,
@@ -206,11 +208,11 @@ class AlarmListViewFragment : Fragment(), AlarmRecyclerViewAdapter.AlarmItemClic
         val alarmIntent =
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) PendingIntent.getBroadcast(
                 context,
-                1,
+                alarm.id.toInt(),
                 intent,
                 PendingIntent.FLAG_IMMUTABLE
             ) else
-                PendingIntent.getBroadcast(context, 1, intent, 0)
+                PendingIntent.getBroadcast(context, alarm.id.toInt(), intent, 0)
         AlarmHelper.cancelNotification(ctx, alarmIntent)
     }
 }

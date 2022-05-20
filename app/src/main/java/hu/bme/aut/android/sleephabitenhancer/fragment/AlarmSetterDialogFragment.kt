@@ -94,6 +94,7 @@ class AlarmSetterDialogFragment(
                         item.reminderDue =
                             Time.fromString(binding.etNotificationTime.text.toString())
                         listener.onAlarmEdited(item)
+                        item.active = true
                     }
                 }
             }
